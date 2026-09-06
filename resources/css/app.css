@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 2px 16px rgba(16,42,82,0.06);
+    border-radius: 1rem;
+    transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+  }
+  .glass-card:hover {
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 8px 32px rgba(16,42,82,0.12);
+    transform: translateY(-4px);
+  }
+  .glass-nav {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.55);
+    box-shadow: 0 4px 24px rgba(16,42,82,0.08);
+  }
+  .glass-dark {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background: #E31E30;
+    color: #fff;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  }
+  .btn-primary:hover {
+    background: #c01828;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(227,30,48,0.30);
+  }
+  .btn-ghost-dark {
+    display: inline-flex;
+    align-items: center;
+    color: #fff;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.22);
+    transition: background 0.22s ease, transform 0.22s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .btn-ghost-dark:hover {
+    background: rgba(255,255,255,0.20);
+    transform: translateY(-2px);
+  }
+  .eyebrow {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #E31E30;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  .font-mono-data { font-family: 'JetBrains Mono', monospace; }
+  .dot-grid { display: grid; grid-template-columns: repeat(3, 8px); gap: 7px; }
+  .dot-grid span { width: 8px; height: 8px; border-radius: 50%; background: rgba(240,135,30,0.45); display: block; }
+}
