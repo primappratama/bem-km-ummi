@@ -121,7 +121,11 @@
         </div>
 
         <div class="js-hero-stats hidden md:flex absolute bottom-20 right-6 gap-3">
-            @php $stats = [['value'=>'7','label'=>'Kementerian'],['value'=>'2025','label'=>'Kabinet'],['value'=>'∞','label'=>'Aspirasi']]; @endphp
+            @php $stats = [
+                    ['value' => \App\Models\Kementerian::count(), 'label' => 'Kementerian'],
+                    ['value' => \App\Models\Pengurus::count(), 'label' => 'Pengurus Aktif'],
+                    ['value' => \App\Models\Aspirasi::count(), 'label' => 'Aspirasi'],
+                ]; @endphp
             @foreach($stats as $s)
             <div class="glass-dark rounded-2xl px-5 py-4 text-center min-w-[80px]">
                 <p class="text-2xl font-extrabold text-white leading-none">{{ $s['value'] }}</p>
@@ -151,7 +155,7 @@
         <div class="js-reveal">
             <p class="eyebrow mb-3">Misi</p>
             <ul class="space-y-3">
-                @php $misiList = [
+                @php $misiList = \App\Models\Profil::getMisi(); if (empty($misiList)) $misiList = [
                     'Mengadvokasi dan memperjuangkan hak serta kesejahteraan mahasiswa.',
                     'Membangun sistem komunikasi dan informasi yang transparan dan akuntabel.',
                     'Mengembangkan kapasitas mahasiswa melalui program pemberdayaan SDM.',

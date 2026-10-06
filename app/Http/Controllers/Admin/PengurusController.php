@@ -26,7 +26,7 @@ class PengurusController extends Controller
             $q = $request->search;
             $query->where(function ($query) use ($q) {
                 $query->where('nama', 'like', "%{$q}%")
-                      ->orWhere('jabatan', 'like', "%{$q}%");
+                    ->orWhere('jabatan', 'like', "%{$q}%");
             });
         }
 

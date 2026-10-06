@@ -109,21 +109,24 @@
 
     <div class="max-w-4xl mx-auto px-4 py-12 space-y-10">
 
+        @php
+            $visiDB = \App\Models\Profil::get('visi', 'Mewujudkan BEM KM UMMI sebagai organisasi kemahasiswaan yang profesional, inovatif, dan berdampak nyata.');
+            $misiDB = \App\Models\Profil::getMisi();
+            if (empty($misiDB)) $misiDB = ['Mewadahi aspirasi dan pengembangan potensi mahasiswa','Menyelenggarakan kegiatan yang bermanfaat bagi mahasiswa','Membangun sinergi antara mahasiswa dan civitas akademika','Meningkatkan kualitas organisasi yang transparan dan akuntabel'];
+        @endphp
+
         {{-- Visi Misi --}}
         <div class="grid md:grid-cols-2 gap-6">
             <div class="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 class="text-lg font-bold text-navy mb-3">Visi</h2>
-                <p class="text-slate-600 text-sm leading-relaxed">
-                    Mewujudkan BEM KM UMMI sebagai organisasi kemahasiswaan yang profesional, inovatif, dan berdampak nyata bagi mahasiswa Universitas Muhammadiyah Sukabumi.
-                </p>
+                <p class="text-slate-600 text-sm leading-relaxed">{{ $visiDB }}</p>
             </div>
             <div class="bg-white rounded-2xl border border-slate-200 p-6">
                 <h2 class="text-lg font-bold text-navy mb-3">Misi</h2>
                 <ul class="text-slate-600 text-sm leading-relaxed space-y-1.5">
-                    <li class="flex gap-2"><span class="text-navy font-bold shrink-0">1.</span>Mewadahi aspirasi dan pengembangan potensi mahasiswa</li>
-                    <li class="flex gap-2"><span class="text-navy font-bold shrink-0">2.</span>Menyelenggarakan kegiatan yang bermanfaat bagi mahasiswa</li>
-                    <li class="flex gap-2"><span class="text-navy font-bold shrink-0">3.</span>Membangun sinergi antara mahasiswa dan civitas akademika</li>
-                    <li class="flex gap-2"><span class="text-navy font-bold shrink-0">4.</span>Meningkatkan kualitas organisasi yang transparan dan akuntabel</li>
+                    @foreach ($misiDB as $idx => $m)
+                    <li class="flex gap-2"><span class="text-navy font-bold shrink-0">{{ $idx + 1 }}.</span>{{ $m }}</li>
+                    @endforeach
                 </ul>
             </div>
         </div>
@@ -274,4 +277,5 @@ function closeModal() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 
+<x-toast />
 @endsection

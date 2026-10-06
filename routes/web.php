@@ -54,17 +54,18 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Kementerian — super_admin only
     Route::middleware('role:super_admin')->group(function () {
         Route::resource('/kementerian', KementerianController::class)
-             ->only(['index', 'edit', 'update']);
+            ->only(['index', 'edit', 'update']);
     });
 
     // Pengurus
     Route::middleware('role:super_admin,sekretaris')->group(function () {
         Route::resource('/pengurus', PengurusController::class)
-             ->parameters(['pengurus' => 'pengurus']);
+            ->parameters(['pengurus' => 'pengurus']);
     });
 
     // Keuangan
     Route::middleware('role:super_admin,bendahara')->group(function () {
+        Route::get('/keuangan/export', [KeuanganController::class, 'export'])->name('keuangan.export');
         Route::resource('/keuangan', KeuanganController::class);
     });
 
@@ -76,15 +77,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Aspirasi
     Route::middleware('role:super_admin,sekretaris')->group(function () {
         Route::get('/aspirasi',                     [AspirasiController::class, 'index'])
-             ->name('aspirasi.index');
+            ->name('aspirasi.index');
         Route::patch('/aspirasi/{aspirasi}/status', [AspirasiController::class, 'updateStatus'])
-             ->name('aspirasi.status');
+            ->name('aspirasi.status');
         Route::delete('/aspirasi/{aspirasi}',       [AspirasiController::class, 'destroy'])
-             ->name('aspirasi.destroy');
+            ->name('aspirasi.destroy');
     });
 
     // Absensi
     Route::middleware('role:super_admin,sekretaris,kementerian')->group(function () {
+        Route::get('/absensi/rekap', [AbsensiController::class, 'rekap'])->name('absensi.rekap');
         Route::resource('/absensi', AbsensiController::class)->except(['show']);
     });
 

@@ -17,10 +17,10 @@ class DashboardController extends Controller
             'pengurus'      => DB::table('pengurus')->count(),
             'program_kerja' => DB::table('program_kerja')->count(),
             'aspirasi'      => DB::table('aspirasi')
-                                  ->where('status_tindak_lanjut', 'belum_ditindaklanjuti')
-                                  ->count(),
+                                ->where('status_tindak_lanjut', 'belum_ditindaklanjuti')
+                                ->count(),
             'saldo'         => DB::table('keuangan')->where('jenis', 'masuk')->sum('jumlah')
-                             - DB::table('keuangan')->where('jenis', 'keluar')->sum('jumlah'),
+                            - DB::table('keuangan')->where('jenis', 'keluar')->sum('jumlah'),
         ];
 
         // ─── Program kerja breakdown by status ───────────────────────────────

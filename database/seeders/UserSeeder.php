@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     {
         $users = [
             [
-                'name'     => 'Presiden BEM',
+                'name'     => 'Administrator',
                 'email'    => 'admin@bemkm.ac.id',
                 'password' => Hash::make('password'),
                 'role'     => 'super_admin',
@@ -29,21 +29,20 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role'     => 'bendahara',
             ],
-            [
-                'name'     => 'Pengurus Kemenlu',
-                'email'    => 'kemenlu@bemkm.ac.id',
-                'password' => Hash::make('password'),
-                'role'     => 'kementerian',
-            ],
         ];
 
-        foreach ($users as $data) {
-            User::updateOrCreate(
-                ['email' => $data['email']],
-                $data
+        foreach ($users as $u) {
+            User::firstOrCreate(
+                ['email' => $u['email']],
+                [
+                    'name'     => $u['name'],
+                    'password' => $u['password'],
+                    'role'     => $u['role'],
+                ]
             );
         }
 
-        $this->command->info('✓ 4 demo users seeded (password: password)');
+        $this->command->info('✓ Users seeded (admin, sekretaris, bendahara)');
+        $this->command->info('  Login: admin@bemkm.ac.id / password');
     }
 }

@@ -27,9 +27,9 @@
                     Nama Lengkap
                 </label>
                 <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}" required
-                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm
-                              focus:outline-none focus:ring-2 focus:ring-navy/20 transition-all
-                              @error('name') border-red @enderror">
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm
+                            focus:outline-none focus:ring-2 focus:ring-navy/20 transition-all
+                            @error('name') border-red @enderror">
                 @error('name') <p class="mt-1 text-xs text-red">{{ $message }}</p> @enderror
             </div>
 
@@ -38,7 +38,7 @@
                     Email
                 </label>
                 <input type="email" value="{{ auth()->user()->email }}" disabled
-                       class="w-full px-4 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm text-slate-400 cursor-not-allowed">
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm text-slate-400 cursor-not-allowed">
                 <p class="mt-1 text-xs text-slate-400">Email tidak dapat diubah.</p>
             </div>
 
@@ -47,7 +47,7 @@
                     Role
                 </label>
                 <input type="text" value="{{ auth()->user()->role }}" disabled
-                       class="w-full px-4 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm text-slate-400 cursor-not-allowed capitalize">
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm text-slate-400 cursor-not-allowed capitalize">
             </div>
 
             <button type="submit" class="btn-primary">Simpan Nama</button>

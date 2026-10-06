@@ -143,7 +143,7 @@
 
               {{-- Hapus --}}
               <form method="POST" action="{{ route('admin.aspirasi.destroy', $item) }}"
-                onsubmit="return confirm('Hapus aspirasi ini?')">
+                class="hidden">
                 @csrf @method('DELETE')
                 <button type="submit"
                   class="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">

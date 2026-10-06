@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use App\Models\Kementerian;
 use App\Models\Pengurus;
 use App\Models\ProgramKerja;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AbsensiController extends Controller
 {
@@ -18,15 +20,12 @@ class AbsensiController extends Controller
         if ($request->filled('program_kerja_id')) {
             $query->where('program_kerja_id', $request->program_kerja_id);
         }
-
         if ($request->filled('pengurus_id')) {
             $query->where('pengurus_id', $request->pengurus_id);
         }
-
         if ($request->filled('status')) {
             $query->where('status_kehadiran', $request->status);
         }
-
         if ($request->filled('bulan')) {
             $query->whereMonth('tanggal', $request->bulan);
         }
@@ -35,7 +34,6 @@ class AbsensiController extends Controller
         $programKerja = ProgramKerja::orderBy('nama_kegiatan')->get();
         $pengurus     = Pengurus::orderBy('nama')->get();
 
-        // Rekap stats
         $stats = [
             'hadir' => Absensi::where('status_kehadiran', 'hadir')->count(),
             'izin'  => Absensi::where('status_kehadiran', 'izin')->count(),
@@ -46,6 +44,37 @@ class AbsensiController extends Controller
         return view('admin.absensi.index', compact(
             'absensi', 'programKerja', 'pengurus', 'stats'
         ));
+    }
+
+    public function rekap(Request $request)
+    {
+        $query = DB::table('absensi')
+            ->join('pengurus', 'absensi.pengurus_id', '=', 'pengurus.id')
+            ->leftJoin('kementerian', 'pengurus.kementerian_id', '=', 'kementerian.id')
+            ->select([
+                'pengurus.id',
+                'pengurus.nama',
+                'pengurus.jabatan',
+                'kementerian.kode',
+                DB::raw('COUNT(*) as total'),
+                DB::raw("SUM(CASE WHEN absensi.status_kehadiran = 'hadir' THEN 1 ELSE 0 END) as hadir"),
+                DB::raw("SUM(CASE WHEN absensi.status_kehadiran = 'izin'  THEN 1 ELSE 0 END) as izin"),
+                DB::raw("SUM(CASE WHEN absensi.status_kehadiran = 'alfa'  THEN 1 ELSE 0 END) as alfa"),
+            ])
+            ->groupBy('pengurus.id', 'pengurus.nama', 'pengurus.jabatan', 'kementerian.kode')
+            ->orderBy('pengurus.nama');
+
+        if ($request->filled('bulan')) {
+            $query->whereMonth('absensi.tanggal', $request->bulan);
+        }
+        if ($request->filled('kementerian_id')) {
+            $query->where('pengurus.kementerian_id', $request->kementerian_id);
+        }
+
+        $rekap          = $query->get();
+        $kementerianList = Kementerian::orderBy('kode')->get();
+
+        return view('admin.absensi.rekap', compact('rekap', 'kementerianList'));
     }
 
     public function create()
@@ -64,7 +93,6 @@ class AbsensiController extends Controller
             'status_kehadiran' => 'required|in:hadir,izin,alfa',
         ]);
 
-        // Prevent duplicate
         $exists = Absensi::where('pengurus_id', $validated['pengurus_id'])
             ->where('program_kerja_id', $validated['program_kerja_id'])
             ->where('tanggal', $validated['tanggal'])

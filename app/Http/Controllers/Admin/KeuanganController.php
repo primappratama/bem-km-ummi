@@ -15,48 +15,34 @@ class KeuanganController extends Controller
         $query = Keuangan::with(['user', 'programKerja'])
             ->orderBy('tanggal_transaksi', 'desc');
 
-        // Filter jenis
         if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
         }
-
-        // Filter program kerja
-        if ($request->filled('program_kerja_id')) {
-            $query->where('program_kerja_id', $request->program_kerja_id);
-        }
-
-        // Filter bulan/tahun
         if ($request->filled('bulan')) {
             $query->whereMonth('tanggal_transaksi', $request->bulan);
         }
         if ($request->filled('tahun')) {
             $query->whereYear('tanggal_transaksi', $request->tahun);
         }
-
-        // Search keterangan
-        if ($request->filled('search')) {
-            $query->where('keterangan', 'like', '%' . $request->search . '%');
+        if ($request->filled('program_kerja_id')) {
+            $query->where('program_kerja_id', $request->program_kerja_id);
         }
 
-        $transaksi   = $query->paginate(20)->withQueryString();
+        $transaksi = $query->paginate(20)->withQueryString();
         $programKerja = ProgramKerja::orderBy('nama_kegiatan')->get();
 
-        // ── Summary stats (dari seluruh data, bukan yang difilter) ──────────
         $totalMasuk  = Keuangan::where('jenis', 'masuk')->sum('jumlah');
         $totalKeluar = Keuangan::where('jenis', 'keluar')->sum('jumlah');
         $saldo       = $totalMasuk - $totalKeluar;
 
-        // Summary bulan ini
-        $bulanIni        = now()->month;
-        $tahunIni        = now()->year;
-        $masukBulanIni   = Keuangan::where('jenis', 'masuk')
-                               ->whereMonth('tanggal_transaksi', $bulanIni)
-                               ->whereYear('tanggal_transaksi', $tahunIni)
-                               ->sum('jumlah');
-        $keluarBulanIni  = Keuangan::where('jenis', 'keluar')
-                               ->whereMonth('tanggal_transaksi', $bulanIni)
-                               ->whereYear('tanggal_transaksi', $tahunIni)
-                               ->sum('jumlah');
+        $masukBulanIni  = Keuangan::where('jenis', 'masuk')
+            ->whereMonth('tanggal_transaksi', now()->month)
+            ->whereYear('tanggal_transaksi', now()->year)
+            ->sum('jumlah');
+        $keluarBulanIni = Keuangan::where('jenis', 'keluar')
+            ->whereMonth('tanggal_transaksi', now()->month)
+            ->whereYear('tanggal_transaksi', now()->year)
+            ->sum('jumlah');
 
         return view('admin.keuangan.index', compact(
             'transaksi', 'programKerja',
@@ -73,19 +59,22 @@ class KeuanganController extends Controller
 
     public function store(Request $request)
     {
-        $rules = [
-            'jenis'              => 'required|in:masuk,keluar',
-            'jumlah'             => 'required|numeric|min:1',
-            'keterangan'         => 'nullable|string|max:255',
-            'tanggal_transaksi'  => 'required|date',
-            'program_kerja_id'   => 'nullable|exists:program_kerja,id',
-        ];
+        $request->validate([
+            'jenis'             => 'required|in:masuk,keluar',
+            'jumlah'            => 'required|numeric|min:1',
+            'keterangan'        => 'nullable|string|max:255',
+            'tanggal_transaksi' => 'required|date',
+            'program_kerja_id'  => 'nullable|exists:program_kerja,id',
+        ]);
 
-        // Kalau keluar, program kerja dianjurkan tapi tidak wajib
-        $validated = $request->validate($rules);
-        $validated['user_id'] = auth()->id();
-
-        Keuangan::create($validated);
+        Keuangan::create([
+            'user_id'           => auth()->id(),
+            'jenis'             => $request->jenis,
+            'jumlah'            => $request->jumlah,
+            'keterangan'        => $request->keterangan,
+            'tanggal_transaksi' => $request->tanggal_transaksi,
+            'program_kerja_id'  => $request->program_kerja_id ?: null,
+        ]);
 
         return redirect()->route('admin.keuangan.index')
             ->with('success', 'Transaksi berhasil dicatat.');
@@ -99,7 +88,7 @@ class KeuanganController extends Controller
 
     public function update(Request $request, Keuangan $keuangan)
     {
-        $validated = $request->validate([
+        $request->validate([
             'jenis'             => 'required|in:masuk,keluar',
             'jumlah'            => 'required|numeric|min:1',
             'keterangan'        => 'nullable|string|max:255',
@@ -107,7 +96,13 @@ class KeuanganController extends Controller
             'program_kerja_id'  => 'nullable|exists:program_kerja,id',
         ]);
 
-        $keuangan->update($validated);
+        $keuangan->update([
+            'jenis'             => $request->jenis,
+            'jumlah'            => $request->jumlah,
+            'keterangan'        => $request->keterangan,
+            'tanggal_transaksi' => $request->tanggal_transaksi,
+            'program_kerja_id'  => $request->program_kerja_id ?: null,
+        ]);
 
         return redirect()->route('admin.keuangan.index')
             ->with('success', 'Transaksi berhasil diperbarui.');
@@ -116,8 +111,42 @@ class KeuanganController extends Controller
     public function destroy(Keuangan $keuangan)
     {
         $keuangan->delete();
+        return back()->with('success', 'Transaksi berhasil dihapus.');
+    }
 
-        return redirect()->route('admin.keuangan.index')
-            ->with('success', 'Transaksi berhasil dihapus.');
+    // ─── Export laporan ──────────────────────────────────────────────────────
+    public function export(Request $request)
+    {
+        $query = Keuangan::with(['user', 'programKerja'])
+            ->orderBy('tanggal_transaksi', 'asc');
+
+        if ($request->filled('bulan')) {
+            $query->whereMonth('tanggal_transaksi', $request->bulan);
+        }
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal_transaksi', $request->tahun);
+        }
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $transaksi   = $query->get();
+        $totalMasuk  = $transaksi->where('jenis', 'masuk')->sum('jumlah');
+        $totalKeluar = $transaksi->where('jenis', 'keluar')->sum('jumlah');
+        $saldo       = $totalMasuk - $totalKeluar;
+
+        $periode = '';
+        if ($request->filled('bulan') && $request->filled('tahun')) {
+            $periode = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1)
+                ->translatedFormat('F Y');
+        } elseif ($request->filled('tahun')) {
+            $periode = 'Tahun ' . $request->tahun;
+        } else {
+            $periode = 'Semua Periode';
+        }
+
+        return view('admin.keuangan.export', compact(
+            'transaksi', 'totalMasuk', 'totalKeluar', 'saldo', 'periode'
+        ));
     }
 }

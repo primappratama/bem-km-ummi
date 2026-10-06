@@ -19,8 +19,8 @@ class AspirasiController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('nama', 'like', '%' . $request->search . '%')
-                  ->orWhere('fakultas', 'like', '%' . $request->search . '%')
-                  ->orWhere('isi_aspirasi', 'like', '%' . $request->search . '%');
+                ->orWhere('fakultas', 'like', '%' . $request->search . '%')
+                ->orWhere('isi_aspirasi', 'like', '%' . $request->search . '%');
             });
         }
 

@@ -75,6 +75,14 @@
         @endif
     </form>
 
+    <a href="{{ route('admin.absensi.rekap') }}"
+       class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold
+              border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Rekap
+    </a>
     <a href="{{ route('admin.absensi.create') }}" class="btn-primary shrink-0">
         + Catat Absensi
     </a>
@@ -129,8 +137,13 @@
                                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                             </a>
-                            <form method="POST" action="{{ route('admin.absensi.destroy', $a) }}"
-                                  onsubmit="return confirm('Hapus catatan absensi ini?')">
+                            <button type="button"
+                                    onclick="confirmDelete('{{ route('admin.absensi.destroy', $a) }}', 'Absensi {{ addslashes($a->pengurus->nama ?? '') }}')"
+                                    class="p-1.5 rounded-lg text-slate-400 hover:text-red hover:bg-red/8 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                         class="p-1.5 rounded-lg text-slate-400 hover:text-red hover:bg-red/8 transition-colors">

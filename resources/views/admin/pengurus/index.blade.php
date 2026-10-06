@@ -6,6 +6,7 @@
 
 {{-- Toolbar --}}
 <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+    {{-- Search + Filter --}}
     <form method="GET" action="{{ route('admin.pengurus.index') }}"
           class="flex flex-col sm:flex-row gap-2 flex-1">
         <input type="text" name="search" value="{{ request('search') }}"
@@ -38,6 +39,7 @@
         @endif
     </form>
 
+    {{-- Tambah --}}
     @if (auth()->user()->isAdmin())
     <a href="{{ route('admin.pengurus.create') }}" class="btn-primary shrink-0">
         + Tambah Pengurus
@@ -72,6 +74,7 @@
             <tbody class="divide-y divide-slate-50">
                 @foreach ($pengurus as $p)
                 <tr class="hover:bg-slate-50/60 transition-colors">
+                    {{-- Avatar + Nama --}}
                     <td class="px-5 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-navy/10 flex items-center justify-center shrink-0">
@@ -106,7 +109,7 @@
                     </td>
                     <td class="px-5 py-4 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('admin.pengurus.edit', ['pengurus' => $p->id]) }}"
+                            <a href="{{ route('admin.pengurus.edit', $p) }}"
                                class="p-1.5 rounded-lg text-slate-400 hover:text-navy hover:bg-navy/8 transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -114,9 +117,8 @@
                                 </svg>
                             </a>
                             @if (auth()->user()->isAdmin())
-                            <form method="POST"
-                                  action="{{ route('admin.pengurus.destroy', ['pengurus' => $p->id]) }}"
-                                  onsubmit="return confirm('Hapus {{ $p->nama }}? Akun login-nya juga akan dihapus.')">
+                            <form method="POST" action="{{ route('admin.pengurus.destroy', $p) }}"
+                                  class="hidden">
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                         class="p-1.5 rounded-lg text-slate-400 hover:text-red hover:bg-red/8 transition-colors">
@@ -135,6 +137,7 @@
         </table>
     </div>
 
+    {{-- Pagination --}}
     @if ($pengurus->hasPages())
     <div class="px-5 py-4 border-t border-slate-100">
         {{ $pengurus->links() }}
@@ -143,6 +146,7 @@
     @endif
 </div>
 
+{{-- Count --}}
 <p class="text-xs text-slate-400 mt-3">
     Menampilkan {{ $pengurus->count() }} dari {{ $pengurus->total() }} pengurus
 </p>

@@ -29,14 +29,11 @@
 
             {{-- Desktop nav --}}
             <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-ink/70">
-                @php
-                    $navActive = fn($path) => request()->is($path) ? 'text-navy border-b-2 border-red pb-0.5' : 'hover:text-navy transition-colors duration-200';
-                @endphp
-                <a href="{{ url('/') }}"             class="{{ $navActive('/') }}">Beranda</a>
-                <a href="{{ url('/profil') }}"        class="{{ $navActive('profil') }}">Tentang Kami</a>
-                <a href="{{ url('/program-kerja') }}" class="{{ $navActive('program-kerja') }}">Program Kerja</a>
-                <a href="{{ url('/berita') }}"        class="{{ $navActive('berita') }}">Berita</a>
-                <a href="{{ url('/galeri') }}"        class="{{ $navActive('galeri') }}">Galeri</a>
+                <a href="{{ url('/') }}"             class="hover:text-navy transition-colors duration-200">Beranda</a>
+                <a href="{{ url('/profil') }}"        class="hover:text-navy transition-colors duration-200">Tentang Kami</a>
+                <a href="{{ url('/program-kerja') }}" class="hover:text-navy transition-colors duration-200">Program Kerja</a>
+                <a href="{{ url('/berita') }}"        class="hover:text-navy transition-colors duration-200">Berita</a>
+                <a href="{{ url('/galeri') }}"        class="hover:text-navy transition-colors duration-200">Galeri</a>
             </nav>
 
             {{-- CTA + Hamburger --}}
@@ -139,5 +136,6 @@
         });
     })();
     </script>
+<x-toast />
 </body>
 </html>
