@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class PengaturanController extends Controller
 {
@@ -17,12 +18,20 @@ class PengaturanController extends Controller
     public function updateProfil(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:150',
+            'name'     => 'required|string|max:150',
+            'username' => ['required','string','max:50','alpha_dash',
+                           Rule::unique('users', 'username')->ignore(Auth::id())],
+        ], [
+            'username.alpha_dash' => 'Username hanya boleh huruf, angka, strip (-), dan garis bawah (_).',
+            'username.unique'     => 'Username sudah dipakai pengguna lain.',
         ]);
 
-        Auth::user()->update(['name' => $request->name]);
+        Auth::user()->update([
+            'name'     => $request->name,
+            'username' => strtolower($request->username),
+        ]);
 
-        return back()->with('success', 'Nama berhasil diperbarui.');
+        return back()->with('success', 'Profil berhasil diperbarui.');
     }
 
     public function updatePassword(Request $request)

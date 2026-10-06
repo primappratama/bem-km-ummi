@@ -12,20 +12,26 @@ class PengurusSeeder extends Seeder
 {
     public function run(): void
     {
-        // Helper
         $buat = function (?string $kodeKem, string $nama, string $jabatan, string $role = 'kementerian') {
             $kemId = null;
             if ($kodeKem) {
-                $kem = Kementerian::where('kode', $kodeKem)->first();
+                $kem   = Kementerian::where('kode', $kodeKem)->first();
                 $kemId = $kem?->id;
             }
 
-            $email = strtolower(preg_replace('/[^a-z0-9]/i', '.', $nama)) . '@bemkm.ac.id';
+            // Generate email & username dari nama
+            // contoh: Saddam Syahrul Rifaldi → saddam.syahrul.rifaldi
+            $slug     = strtolower(preg_replace('/[^a-z0-9]/i', '.', $nama));
+            $slug     = preg_replace('/\.{2,}/', '.', $slug); // hapus double dot
+            $slug     = trim($slug, '.');
+            $email    = $slug . '@bemkm.ac.id';
+            $username = $slug;
 
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [
                     'name'     => $nama,
+                    'username' => $username,
                     'password' => Hash::make('password'),
                     'role'     => $role,
                 ]
@@ -75,6 +81,6 @@ class PengurusSeeder extends Seeder
         $buat('KEMENDAGRI', 'Sasa Gasby Megantara', 'Biro');
 
         $this->command->info('✓ Pengurus seeded (' . Pengurus::count() . ' pengurus)');
-        $this->command->info('  KEMENPSDM belum ada data — tambah manual via /admin/pengurus');
+        $this->command->info('  KEMENPSDM masih kosong — tambah via /admin/pengurus');
     }
 }

@@ -13,18 +13,21 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'name'     => 'Administrator',
+                'username' => 'admin',
                 'email'    => 'admin@bemkm.ac.id',
                 'password' => Hash::make('password'),
                 'role'     => 'super_admin',
             ],
             [
                 'name'     => 'Sekretaris Umum',
+                'username' => 'sekretaris',
                 'email'    => 'sekretaris@bemkm.ac.id',
                 'password' => Hash::make('password'),
                 'role'     => 'sekretaris',
             ],
             [
                 'name'     => 'Bendahara Umum',
+                'username' => 'bendahara',
                 'email'    => 'bendahara@bemkm.ac.id',
                 'password' => Hash::make('password'),
                 'role'     => 'bendahara',
@@ -36,6 +39,8 @@ class UserSeeder extends Seeder
                 ['email' => $u['email']],
                 [
                     'name'     => $u['name'],
+                    'username' => $u['username'],
+                    'email'    => $u['email'],
                     'password' => $u['password'],
                     'role'     => $u['role'],
                 ]
@@ -43,6 +48,6 @@ class UserSeeder extends Seeder
         }
 
         $this->command->info('✓ Users seeded (admin, sekretaris, bendahara)');
-        $this->command->info('  Login: admin@bemkm.ac.id / password');
+        $this->command->info('  Login: username=admin / password=password');
     }
 }
